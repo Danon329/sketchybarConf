@@ -1,0 +1,5 @@
+require("plugins.items.apple_logo")
+require("plugins.items.spaces")
+require("plugins.items.clock")
+require("plugins.items.utilities")
+require("plugins.items.battery")
