@@ -34,6 +34,22 @@ for _, space_id in ipairs(spaces) do
 		label = { drawing = false },
 	})
 
+	space:subscribe("mouse.clicked", function()
+		-- sbar.exec('echo "SPACE ' .. space_id .. '" > /tmp/sketchybar_daemon.fifo')
+		local pipe = io.open("/tmp/sketchybar_daemon.fifo", "w")
+		if pipe then
+			pipe:write("SPACE " .. space_id .. "\n")
+			pipe:flush()
+			pipe:close()
+		else
+			space:set({ label = "failed to open pipe" })
+		end
+	end)
+
+	space:subscribe("mouse.exited.global", function(_)
+		space:set({ popup = { drawing = false } })
+	end)
+
 	space:subscribe("aerospace_workspace_change", function(env)
 		local is_selected = (env.FOCUSED_WORKSPACE == space_id)
 
@@ -68,38 +84,38 @@ for _, space_id in ipairs(spaces) do
 			})
 		end
 	end)
+end
 
-	local back_slot = sbar.add("item", "popup.slot.back", {
-		position = "popup." .. space.name,
-		label = {
-			string = "Back",
-			color = colors.highlight,
-		},
+local back_slot = sbar.add("item", "popup.slot.back", {
+	label = {
+		string = "Back",
+		color = colors.highlight,
+	},
+	drawing = false,
+})
+
+back_slot:subscribe({ "mouse.entered", "mouse.exited" }, function(env)
+	highlight(env, back_slot)
+end)
+
+back_slot:subscribe("mouse.clicked", function()
+	-- TODO: add call to daemon to --navigate-back
+	sbar.exec('echo "SLOT BACK" > /tmp/sketchybar_daemon.fifo')
+end)
+
+-- pool of standard popups to be populated by daemon
+for i = 1, 20 do
+	local slot = sbar.add("item", "popup.slot." .. i, {
+		label = { color = colors.highlight },
 		drawing = false,
 	})
 
-	back_slot:subscribe({ "mouse.entered", "mouse.exited" }, function(env)
-		highlight(env, back_slot)
+	slot:subscribe({ "mouse.entered", "mouse.exited" }, function(env)
+		highlight(env, slot)
 	end)
 
-	back_slot:subscribe("mouse.clicked", function()
-		-- TODO: add call to daemon to --navigate-back
+	slot:subscribe("mouse.clicked", function()
+		-- TODO: add call to daemon to --call-slot or select slot, let daemon check for children or so
+		sbar.exec('echo "SLOT ' .. i .. '" > /tmp/sketchybar_daemon.fifo')
 	end)
-
-	-- pool of standard popups to be populated by daemon
-	for i = 1, 10 do
-		local slot = sbar.add("item", "popup.slot." .. i, {
-			position = "popup." .. space.name,
-			label = { color = colors.highlight },
-			drawing = false,
-		})
-
-		slot:subscribe({ "mouse.entered", "mouse.exited" }, function(env)
-			highlight(env, slot)
-		end)
-
-		slot:subscribe("mouse.clicked", function()
-			-- TODO: add call to daemon to --call-slot or select slot, let daemon check for children or so
-		end)
-	end
 end
