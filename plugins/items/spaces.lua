@@ -35,15 +35,7 @@ for _, space_id in ipairs(spaces) do
 	})
 
 	space:subscribe("mouse.clicked", function()
-		-- sbar.exec('echo "SPACE ' .. space_id .. '" > /tmp/sketchybar_daemon.fifo')
-		local pipe = io.open("/tmp/sketchybar_daemon.fifo", "w")
-		if pipe then
-			pipe:write("SPACE " .. space_id .. "\n")
-			pipe:flush()
-			pipe:close()
-		else
-			space:set({ label = "failed to open pipe" })
-		end
+		sbar.exec('echo "SPACE ' .. space_id .. '" > /tmp/sketchybar_daemon.fifo')
 	end)
 
 	space:subscribe("mouse.exited.global", function(_)
