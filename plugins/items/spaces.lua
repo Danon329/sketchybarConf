@@ -12,6 +12,7 @@ local function highlight(env, item)
 			},
 			label = {
 				color = colors.highlight_text,
+				padding_right = 12,
 			},
 		})
 	elseif env.SENDER == "mouse.exited" then

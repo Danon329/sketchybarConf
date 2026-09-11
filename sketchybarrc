@@ -7,6 +7,10 @@ package.path = config_dir .. "/?.lua;" .. config_dir .. "/?/init.lua;" .. packag
 
 sbar = require("sketchybar")
 
+sbar.exec("pkill -f sketchybar_daemon)", function()
+	sbar.exec("$HOME/dev/daemons/sketchybar-daemon/build/sketchybar_daemon")
+end)
+
 sbar.begin_config()
 require("main")
 sbar.hotload(true)
