@@ -10,6 +10,9 @@ local function highlight(env, item)
 				height = 24,
 				corner_radius = 9,
 			},
+			icon = {
+				color = colors.highlight_text,
+			},
 			label = {
 				color = colors.highlight_text,
 				padding_right = 12,
@@ -18,6 +21,7 @@ local function highlight(env, item)
 	elseif env.SENDER == "mouse.exited" then
 		item:set({
 			background = { color = colors.bar_color },
+			icon = { color = colors.highlight },
 			label = { color = colors.highlight },
 		})
 	end
@@ -80,6 +84,9 @@ for _, space_id in ipairs(spaces) do
 end
 
 local back_slot = sbar.add("item", "popup.slot.back", {
+	icon = {
+		string = "<",
+	},
 	label = {
 		string = "Back",
 		color = colors.highlight,
@@ -99,7 +106,20 @@ end)
 -- pool of standard popups to be populated by daemon
 for i = 1, 20 do
 	local slot = sbar.add("item", "popup.slot." .. i, {
-		label = { color = colors.highlight },
+		icon = {
+			padding_left = 10,
+			color = colors.highlight,
+			font = {
+				size = 14.0,
+			},
+		},
+		label = {
+			color = colors.highlight,
+			align = "right",
+			font = {
+				size = 16.0,
+			},
+		},
 		drawing = false,
 	})
 
@@ -108,7 +128,6 @@ for i = 1, 20 do
 	end)
 
 	slot:subscribe("mouse.clicked", function()
-		-- TODO: add call to daemon to --call-slot or select slot, let daemon check for children or so
 		sbar.exec('echo "SLOT ' .. i .. '" > /tmp/sketchybar_daemon.fifo')
 	end)
 end
