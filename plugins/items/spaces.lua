@@ -83,9 +83,11 @@ for _, space_id in ipairs(spaces) do
 	end)
 end
 
+-- static slots
 local back_slot = sbar.add("item", "popup.slot.back", {
 	icon = {
 		string = "<",
+		color = colors.highlight,
 	},
 	label = {
 		string = "Back",
@@ -99,8 +101,55 @@ back_slot:subscribe({ "mouse.entered", "mouse.exited" }, function(env)
 end)
 
 back_slot:subscribe("mouse.clicked", function()
-	-- TODO: add call to daemon to --navigate-back
 	sbar.exec('echo "SLOT BACK" > /tmp/sketchybar_daemon.fifo')
+end)
+
+local next_page_slot = sbar.add("item", "popup.slot.next_page", {
+	icon = {
+		string = "Next Page",
+		font = {
+			size = 14,
+		},
+		color = colors.highlight,
+		padding_left = 10,
+	},
+	label = {
+		string = ">",
+		color = colors.highlight,
+		font = {
+			size = 16,
+		},
+	},
+	drawing = false,
+})
+
+next_page_slot:subscribe({ "mouse.entered", "mouse.exited" }, function(env)
+	highlight(env, next_page_slot)
+end)
+
+next_page_slot:subscribe("mouse.clicked", function()
+	sbar.exec('echo "SLOT NEXT" > /tmp/sketchybar_daemon.fifo')
+end)
+
+local previous_page_slot = sbar.add("item", "popup.slot.previous_page", {
+	icon = {
+		string = "<",
+		color = colors.highlight,
+	},
+	label = {
+		string = "Previous Page",
+		color = colors.highlight,
+		align = "right",
+	},
+	drawing = false,
+})
+
+previous_page_slot:subscribe({ "mouse.entered", "mouse.exited" }, function(env)
+	highlight(env, previous_page_slot)
+end)
+
+previous_page_slot:subscribe("mouse.clicked", function()
+	sbar.exec('echo "SLOT PREVIOUS" > /tmp/sketchybar_daemon.fifo')
 end)
 
 -- pool of standard popups to be populated by daemon
